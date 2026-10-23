@@ -3,6 +3,7 @@ import path from 'path';
 import matter from 'gray-matter';
 
 export interface BookReview {
+  slug: string;
   title: string;
   author: string;
   rating: number;
