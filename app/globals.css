@@ -53,10 +53,13 @@ body { background: var(--background); color: var(--foreground); font-family: var
 .review-detail .author { color: #b9b0a3; font-size: 19px; margin: 18px 0 22px; }
 .detail-meta { display: flex; flex-wrap: wrap; gap: 18px 28px; color: #b9b0a3; }
 .detail-meta strong { color: #f5f0e6; font-weight: 500; margin-right: 6px; }
-.review-copy { max-width: 68ch; color: #ded7cb; font-family: var(--font-review-display), serif; font-size: 21px; line-height: 1.42; padding: 38px 0; }
+.review-copy { max-width: 68ch; color: #ded7cb; font-family: var(--font-review-display), serif, "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji"; font-size: 21px; line-height: 1.42; padding: 38px 0; }
 .review-copy p { margin: 0 0 22px; }
 .review-copy strong { color: #f5f0e6; font-family: var(--font-review-sans), sans-serif; font-size: 14px; letter-spacing: .02em; }
-.review-copy ul { padding-left: 22px; margin: 8px 0 24px; }
+.review-copy ul, .review-copy ol { padding-left: 22px; margin: 8px 0 24px; }
+.review-copy ul { list-style: disc; }
+.review-copy ol { list-style: decimal; }
+.review-copy li::marker { color: #ed6a25; }
 .review-footer { border-top: 1px solid #34302a; padding-top: 18px; color: #b9b0a3; font-family: var(--font-review-mono), monospace; font-size: 11px; }
 @media (max-width: 760px) {
   .review-shell { width: min(100% - 28px, 600px); padding-top: 18px; }
