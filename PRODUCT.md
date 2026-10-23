@@ -1,46 +1,46 @@
-# bookchaowalit-bookreviews-frontend — Product brief
+# Book Reviews — Product truth
 
-**Slug:** `bookchaowalit-website/bookchaowalit-bookreviews-frontend`  
-**Generated:** 2026-08-11 (bulk Book Dev closeout)  
-**Status:** starter / portfolio boundary
+> Inferred from the code and copy (no user interview). Checked against the portfolio card claims review
+> (`portfolio-site-web/docs/audits/CARD-CLAIMS-REVIEW-2026-10.md`, row `bookreviews`) on 2026-10-23.
 
-## Purpose
+## What it is
 
-Portfolio repository under Book Dev. This brief records ownership and the
-current honest status so the nested tree is not an empty shell in the task
-system.
+A read-only personal reading ledger: three authored reviews in `content/book-reviews/*.mdx` (title, author,
+rating, category, date and ISBN in the frontmatter, the note in markdown), rendered by Next.js.
 
-## Runnable path
+## Who it is for
 
-See `README.md` for install and run instructions when present.
+A portfolio visitor who wants to read short personal book notes in a text-first editorial layout.
 
-## Limits
+## What works today
 
-- Not claimed as production-ready unless README and tests prove it.
-- Mobile smoke / emulator acceptance is separate and toolchain-dependent.
+1. `/` shows the newest review, the review count and the next saved reviews.
+2. `/book-reviews` lists every review, newest first, with category and rating.
+3. `/book-reviews/<slug>` renders one review; the markdown note becomes real paragraphs, bold text and lists, with
+   any HTML in the source shown as text. Unknown or malformed slugs return 404.
+4. `/api/mcp` answers JSON-RPC with `get_reviews`, `get_review`, `search_reviews` and `get_categories` over the
+   same files, echoing the request id; unknown tools and methods return JSON-RPC errors.
+5. Front-end and server errors go to Sentry (errors only, personal data stripped) when `NEXT_PUBLIC_SENTRY_DSN` is set.
 
-## Source README excerpt
+## What does not work (and must not be claimed)
 
-```
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+- No reading-status tracking, genre tagging workflow, structured liked/disliked/who-for critiques or traffic
+  outcomes (card claims flagged in the 2026-10 review). Visitors cannot add or rate books.
+- No cover images (the archive says so), no search box on the site (search exists only as the MCP tool), no
+  accounts or storage. The `.mdx` files are read as plain markdown; MDX components are not executed.
 
-## Getting Started
+## Live URL and deploy state
 
-First, run the development server:
+- Live: https://bookreviews.bookchaowalit.com (HTTP 200 on 2026-10-23). On the live build every detail page
+  (for example `/book-reviews/deep-work`) returns 404: the page read `params.slug` without awaiting the Next 16
+  params Promise. The fix is on `main`.
+- Last production deploy: 2026-10-23 12:04 (+07), Vercel CLI, commit 42cee43 (the CVE patch). The Vercel project
+  `bookchaowalit-bookreviews-frontend` has a Git link naming the old repository
+  (`bookchaowalit/bookchaowalit-bookreviews-frontend`), so a push to `main` does not deploy. The L2 commits stay
+  undeployed until the owner reconnects Vercel Git to `bookchaowalit-website/content-bookreviews-web` (owner action D9).
+- `NEXT_PUBLIC_SENTRY_DSN` is set on the Vercel project (Sentry project `content-bookreviews-web`, org `personal-yu0`).
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Boundaries
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize an
-```
+- Reads only its own `content/book-reviews/` directory; slugs are validated (lowercase kebab-case) before any file read.
+- No personal data is collected.
