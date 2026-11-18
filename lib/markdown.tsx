@@ -92,7 +92,8 @@ export function Markdown({ source, title }: { source: string; title?: string }) 
         const key = `b-${index}`;
         switch (block.type) {
           case "heading": {
-            const Tag = `h${block.level}` as const;
+            // The page header holds the one h1, so a level-1 heading in the body becomes an h2.
+            const Tag = `h${Math.max(2, block.level) as 2 | 3 | 4}` as const;
             return <Tag key={key}>{renderInline(block.text, key)}</Tag>;
           }
           case "code":

@@ -1,15 +1,14 @@
 # Design direction
 
-Book Reviews is a text-first reading ledger presented as a film-cutting bench.
-The selected review is the current workprint; the contact sheet keeps adjacent
-entries reachable without collapsing the archive into a card grid.
+Since 2026-11-19 Book Reviews uses the shared Reader shell (see `READER.md`): Geist via `next/font`,
+the `--rs-*` tokens in `app/reader-shell.css` (light and dark, WCAG 2.2 AA), 44px targets, one h1 per
+page and a forced-colors fallback. The film-cutting-bench look (black and orange, 10px mono labels,
+a three-column strip that left an empty column) is retired.
 
-- Palette: true black, grain orange, punched white, warm paper text.
-- Type: Cormorant Garamond for the literary voice, Roboto Condensed for UI,
-  and DM Mono for frame labels and metadata.
-- Form: perforated rails, frame marks, workprint strip, and text-only cover
-  windows because the referenced cover assets are not present.
-- Content truth: ratings, dates, ISBNs, authors, and review copy come from the
-  MDX files. The interface does not imply attached cover artwork.
-- Responsive rule: the rail becomes a vertical contact sheet on narrow screens;
-  the selected frame remains the first reading target.
+- `/` — what the ledger is, the date the last review was added, and every review as a row (date and
+  rating, title, author, category).
+- `/book-reviews` — the full index with category chips (`?category=`) and a result count.
+- `/book-reviews/<slug>` — header (author, reading date, rating, ISBN), the note rendered by
+  `lib/markdown.tsx` (a body `# h1` becomes an h2), previous / next in index order.
+
+No cover art: the reviews carry ISBNs, but covers are not fetched (no third-party image calls).
