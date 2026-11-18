@@ -18,14 +18,14 @@ export function ReviewFrame({ current, children }: { current?: "index"; children
     <Reader>
       <ReaderTop name="Book Reviews" tagline="Chaowalit Greepoke" links={[{ href: "/book-reviews", label: "All reviews", current: current === "index" }]} />
       <main id="main" className="rs-main">{children}</main>
-      <ReaderFoot source={SOURCE} links={[{ href: "/api/mcp", label: "MCP API" }]} note="Personal reading notes, written by hand: not recommendations or sponsored reviews. No cover art is attached." />
+      <ReaderFoot source={SOURCE} links={[{ href: "/mcp", label: "MCP API" }]} note="Personal reading notes, written by hand: not recommendations or sponsored reviews. No cover art is attached." />
     </Reader>
   );
 }
 
 export const rating = (review: BookReview) => `Rated ${review.rating} of 5`;
-const toEntry = (review: BookReview): Entry => ({
-  href: `/book-reviews/${review.slug}`,
+const toEntry = (review: BookReview, category = ""): Entry => ({
+  href: `/book-reviews/${review.slug}${category ? `?${new URLSearchParams({ category })}` : ""}`,
   title: review.title,
   summary: `by ${review.author}`,
   date: review.date,
@@ -50,7 +50,7 @@ export function HomeView({ reviews }: { reviews: BookReview[] }) {
         <section aria-labelledby="latest">
           <div className="rs-section-head"><h2 id="latest">Reviews</h2></div>
           <p className="rs-count">Last review added {formatDate(reviews[0].date)}.</p>
-          <EntryList headingLevel={3} entries={reviews.map(toEntry)} />
+          <EntryList headingLevel={3} entries={reviews.map((review) => toEntry(review))} />
         </section>
       )}
     </ReviewFrame>
@@ -76,22 +76,27 @@ export function IndexView({ reviews, category = "" }: { reviews: BookReview[]; c
             />
             <ResultCount shown={shown.length} total={reviews.length} noun="review" filter={current || undefined} />
           </div>
-          <EntryList entries={shown.map(toEntry)} />
+          <EntryList entries={shown.map((review) => toEntry(review, current))} />
         </>
       )}
     </ReviewFrame>
   );
 }
 
-/** One review: header (author, date, rating, ISBN), the note, then previous / next in index order. */
-export function ReviewView({ review, reviews }: { review: BookReview; reviews: BookReview[] }) {
-  const { previous, next } = neighbours(reviews, reviews.findIndex((r) => r.slug === review.slug));
-  const link = (r?: BookReview): PagerLink | undefined => (r ? { href: `/book-reviews/${r.slug}`, title: r.title } : undefined);
+/**
+ * One review: header (author, date, rating, ISBN), the note, then previous / next in index order. Opened from a
+ * category (?category=), Back returns to that category and previous / next stay inside it.
+ */
+export function ReviewView({ review, reviews, category = "" }: { review: BookReview; reviews: BookReview[]; category?: string }) {
+  const current = category && review.category === category ? category : "";
+  const list = current ? reviews.filter((r) => r.category === current) : reviews;
+  const { previous, next } = neighbours(list, list.findIndex((r) => r.slug === review.slug));
+  const link = (r?: BookReview): PagerLink | undefined => (r ? { href: toEntry(r, current).href, title: r.title } : undefined);
   return (
     <ReviewFrame current="index">
       <article className="rs-article">
         <ArticleHeader
-          back={{ href: "/book-reviews", label: "All reviews" }}
+          back={current ? { href: indexHref(current), label: `Reviews in ${current}` } : { href: "/book-reviews", label: "All reviews" }}
           tags={review.category ? [review.category] : []}
           title={review.title}
           lede={`by ${review.author}`}

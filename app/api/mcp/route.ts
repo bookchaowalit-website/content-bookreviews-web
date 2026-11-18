@@ -1,16 +1,11 @@
 import { NextResponse } from "next/server";
 import { categoriesOf, getAllBookReviews, getBookReviewBySlug, filterReviews } from "@/lib/mdx";
+import { TOOLS } from "@/lib/mcp-tools";
 
 // Stateless JSON-RPC MCP endpoint over the same MDX reviews the pages render (content/book-reviews). Read only.
 
 type RpcRequest = { id?: number | string | null; method?: string; params?: { name?: string; arguments?: Record<string, unknown> } };
 
-const TOOLS = [
-  { name: "get_reviews", description: "List every book review, newest first", inputSchema: { type: "object", properties: { category: { type: "string", description: "Only reviews in this category" } } } },
-  { name: "get_review", description: "Get one book review by slug", inputSchema: { type: "object", properties: { slug: { type: "string" } }, required: ["slug"] } },
-  { name: "search_reviews", description: "Search titles, authors, categories and note text", inputSchema: { type: "object", properties: { query: { type: "string" } }, required: ["query"] } },
-  { name: "get_categories", description: "List the categories used by the reviews", inputSchema: { type: "object", properties: {} } },
-];
 
 class RpcError extends Error {
   constructor(readonly code: number, message: string) {

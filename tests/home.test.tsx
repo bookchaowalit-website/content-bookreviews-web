@@ -6,6 +6,8 @@ import type { BookReview } from "@/lib/mdx";
 import Home from "@/app/page";
 import BookReviewsPage from "@/app/book-reviews/page";
 import { generateMetadata } from "@/app/book-reviews/[slug]/page";
+import McpPage from "@/app/mcp/page";
+import BookReviewPage from "@/app/book-reviews/[slug]/page";
 import sitemap from "@/app/sitemap";
 import robots from "@/app/robots";
 import nextConfig from "../next.config";
@@ -70,6 +72,32 @@ describe("review page", () => {
   it("has metadata for a real review and none for a missing one", async () => {
     expect((await generateMetadata({ params: Promise.resolve({ slug: "deep-work" }) })).title).toBe("Deep Work by Cal Newport");
     expect(await generateMetadata({ params: Promise.resolve({ slug: "missing" }) })).toEqual({});
+  });
+});
+
+describe("follow-ups", () => {
+  it("keeps the category on review pages: links, Back and previous / next", async () => {
+    const index = page(<IndexView reviews={sample} category="tech" />);
+    expect(index.querySelector(".rs-entry-link")?.getAttribute("href")).toBe("/book-reviews/b?category=tech");
+    const view = page(<ReviewView review={sample[0]} reviews={sample} category="tech" />);
+    expect(view.querySelector(".rs-back")?.getAttribute("href")).toBe("/book-reviews?category=tech");
+    expect(view.querySelector(".rs-back")?.textContent).toBe("← Reviews in tech");
+    expect(view.querySelector('.rs-pager a[rel="next"]')?.getAttribute("href")).toBe("/book-reviews/c?category=tech");
+    // A category the review is not in is ignored.
+    const odd = page(await BookReviewPage({ params: Promise.resolve({ slug: "deep-work" }), searchParams: Promise.resolve({ category: ["tech"] }) }));
+    expect(odd.querySelector(".rs-back")?.getAttribute("href")).toBe("/book-reviews");
+  });
+
+  it("gives each review its own share title, description and URL", async () => {
+    const meta = await generateMetadata({ params: Promise.resolve({ slug: "deep-work" }) });
+    expect(meta.openGraph).toMatchObject({ url: "https://bookreviews.bookchaowalit.com/book-reviews/deep-work", title: "Deep Work by Cal Newport", type: "article" });
+    expect(meta.description).toBe("A personal review of Deep Work by Cal Newport, rated 4 of 5.");
+  });
+
+  it("links the footer to an MCP how-to page with the real tools", () => {
+    expect(page(<HomeView reviews={sample} />).querySelector('.rs-foot a[href="/mcp"]')?.textContent).toBe("MCP API");
+    const host = page(<McpPage />);
+    expect([...host.querySelectorAll("tbody code")].map((c) => c.textContent)).toEqual(["get_reviews", "get_review", "search_reviews", "get_categories"]);
   });
 });
 
