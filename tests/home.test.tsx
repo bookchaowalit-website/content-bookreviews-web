@@ -99,6 +99,14 @@ describe("follow-ups", () => {
     const host = page(<McpPage />);
     expect([...host.querySelectorAll("tbody code")].map((c) => c.textContent)).toEqual(["get_reviews", "get_review", "search_reviews", "get_categories"]);
   });
+
+  it("says /api/mcp is a custom JSON-RPC subset, not a full MCP server", () => {
+    const text = page(<McpPage />).textContent ?? "";
+    expect(text).not.toMatch(/answers Model Context Protocol/);
+    expect(text).toContain("Not a full MCP server");
+    expect(text).toContain("result.reviews");
+    expect(text).toMatch(/standard MCP\s+clients expect/);
+  });
 });
 
 describe("site files", () => {
