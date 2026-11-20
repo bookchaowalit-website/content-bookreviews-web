@@ -49,7 +49,7 @@ export function HomeView({ reviews }: { reviews: BookReview[] }) {
       ) : (
         <section aria-labelledby="latest">
           <div className="rs-section-head"><h2 id="latest">Reviews</h2></div>
-          <p className="rs-count">Last review added {formatDate(reviews[0].date)}.</p>
+          <p className="rs-count">Most recent read: {reviews[0].title}, {formatDate(reviews[0].date)}.</p>
           <EntryList headingLevel={3} entries={reviews.map((review) => toEntry(review))} />
         </section>
       )}

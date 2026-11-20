@@ -28,7 +28,9 @@ describe("home page", () => {
     expect(host.querySelector("h1")?.textContent).toBe("Notes from the books that stayed.");
     expect(host.querySelector('.rs-entry-link[href="/book-reviews/deep-work"]')).not.toBeNull();
     expect(host.textContent).toContain("Rated 4 of 5");
-    expect(host.textContent).toContain("Last review added 10 Mar 2024.");
+    // The date is the reading date, so the line must not claim it is when the review was added (DESIGN.md).
+    expect(host.textContent).toContain("Most recent read: Deep Work, 10 Mar 2024.");
+    expect(host.textContent).not.toContain("Last review added");
     expect(host.querySelectorAll(".rs-entry").length).toBe(3);
     expect(host.querySelector('.rs-foot a[href="https://bookchaowalit.com/"]')?.textContent).toBe("More projects");
     expect(host.textContent).toContain("No cover art is attached.");

@@ -58,3 +58,13 @@ describe("share data per page", () => {
     expect(mcpMetadata.twitter).toMatchObject({ title: "MCP API" });
   });
 });
+
+describe("every category chip has a route", () => {
+  it("each category in content/book-reviews is a lowercase slug, so its chip filters (READER.md: chip count = result)", async () => {
+    const { categoriesOf, getAllBookReviews } = await import("@/lib/mdx");
+    const categories = categoriesOf(await getAllBookReviews());
+    expect(categories.length).toBeGreaterThan(0);
+    // A category like "Software Design" would show a chip that cannot route; write it as "software-design".
+    expect(categories.filter((category) => !ROUTABLE.test(category))).toEqual([]);
+  });
+});
