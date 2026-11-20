@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
-import { ReviewView, SITE } from "@/components/review-views";
+import { renderReview } from "@/lib/review-page";
 import { getAllBookReviews, getBookReviewBySlug } from "@/lib/mdx";
+import { shareMetadata } from "@/lib/share";
 
 // Next 16 passes route params as a Promise.
-interface PageProps { params: Promise<{ slug: string }>; searchParams?: Promise<{ category?: string | string[] }> }
+interface PageProps { params: Promise<{ slug: string }> }
 export const dynamicParams = false;
 
 export async function generateStaticParams() {
@@ -14,22 +14,16 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const review = await getBookReviewBySlug((await params).slug);
   if (!review) return {};
-  const title = `${review.title} by ${review.author}`;
-  const description = `A personal review of ${review.title} by ${review.author}, rated ${review.rating} of 5.`;
   // Each review shares as itself (layout.tsx sets the home page's Open Graph data).
-  return {
-    title,
-    description,
-    alternates: { canonical: `/book-reviews/${review.slug}` },
-    openGraph: { type: "article", url: `${SITE}/book-reviews/${review.slug}`, title, description, siteName: "Book Reviews" },
-    twitter: { card: "summary", title, description },
-  };
+  return shareMetadata(
+    `/book-reviews/${review.slug}`,
+    `${review.title} by ${review.author}`,
+    `A personal review of ${review.title} by ${review.author}, rated ${review.rating} of 5.`,
+    "article",
+  );
 }
 
-export default async function BookReviewPage({ params, searchParams }: PageProps) {
-  const { slug } = await params;
-  const review = await getBookReviewBySlug(slug);
-  if (!review) notFound();
-  const { category } = (await searchParams) ?? {};
-  return <ReviewView review={review} reviews={await getAllBookReviews()} category={(Array.isArray(category) ? category[0] : category) ?? ""} />;
+// Pre-rendered. A known ?category= is rewritten to [slug]/in/[category] (next.config.ts).
+export default async function BookReviewPage({ params }: PageProps) {
+  return renderReview((await params).slug);
 }

@@ -7,7 +7,7 @@ import Home from "@/app/page";
 import BookReviewsPage from "@/app/book-reviews/page";
 import { generateMetadata } from "@/app/book-reviews/[slug]/page";
 import McpPage from "@/app/mcp/page";
-import BookReviewPage from "@/app/book-reviews/[slug]/page";
+import ReviewInCategoryPage from "@/app/book-reviews/[slug]/in/[category]/page";
 import sitemap from "@/app/sitemap";
 import robots from "@/app/robots";
 import nextConfig from "../next.config";
@@ -43,7 +43,7 @@ describe("home page", () => {
 
 describe("full index", () => {
   it("lists every review with category chips and links each detail page", async () => {
-    const host = page(await BookReviewsPage({ searchParams: Promise.resolve({}) }));
+    const host = page(await BookReviewsPage());
     expect(host.querySelector(".rs-count")?.textContent).toBe("3 reviews");
     expect(host.querySelector('.rs-nav a[aria-current="page"]')?.textContent).toBe("All reviews");
     for (const slug of ["deep-work", "atomic-habits", "the-pragmatic-programmer"]) expect(host.querySelector(`.rs-entry-link[href="/book-reviews/${slug}"]`)).not.toBeNull();
@@ -54,8 +54,8 @@ describe("full index", () => {
     expect(texts(host, ".rs-chip")).toEqual(["All3", "tech2", "craft1"]);
     expect(host.querySelector('.rs-chip[aria-current="page"]')?.getAttribute("href")).toBe("/book-reviews?category=tech");
     expect(host.querySelector(".rs-count")?.textContent).toBe("Showing 2 of 3 reviews in tech");
-    const real = page(await BookReviewsPage({ searchParams: Promise.resolve({ category: ["nope"] }) }));
-    expect(real.querySelector(".rs-count")?.textContent).toBe("3 reviews");
+    // An unknown ?category= is not rewritten, so it lands on the plain index; the view also ignores one.
+    expect(page(<IndexView reviews={sample} category="nope" />).querySelector(".rs-count")?.textContent).toBe("3 reviews");
     expect(page(<IndexView reviews={[]} />).querySelector(".rs-empty h2")?.textContent).toBe("No reviews yet");
   });
 });
@@ -84,7 +84,7 @@ describe("follow-ups", () => {
     expect(view.querySelector(".rs-back")?.textContent).toBe("← Reviews in tech");
     expect(view.querySelector('.rs-pager a[rel="next"]')?.getAttribute("href")).toBe("/book-reviews/c?category=tech");
     // A category the review is not in is ignored.
-    const odd = page(await BookReviewPage({ params: Promise.resolve({ slug: "deep-work" }), searchParams: Promise.resolve({ category: ["tech"] }) }));
+    const odd = page(await ReviewInCategoryPage({ params: Promise.resolve({ slug: "deep-work", category: "tech" }) }));
     expect(odd.querySelector(".rs-back")?.getAttribute("href")).toBe("/book-reviews");
   });
 

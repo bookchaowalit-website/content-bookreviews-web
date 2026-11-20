@@ -10,6 +10,9 @@ A read-only Next.js reading ledger over **three local markdown reviews** in `con
   `lib/markdown.tsx` (headings, paragraphs, lists, fenced code, bold, italic, inline code, links), so HTML in the
   content is always shown as text and only http(s), mailto and site-relative links are rendered. Pages are
   pre-rendered from the files; unknown or malformed slugs 404.
+- `?category=<name>` (index chips, and review pages opened from a category) is rewritten in `next.config.ts` to
+  pre-rendered twins (`/book-reviews/category/<name>`, `/book-reviews/<slug>/in/<name>`), so no page reads
+  `searchParams` and every URL stays static; an unknown category falls through to the plain page.
 - `/api/mcp` answers JSON-RPC `initialize`, `tools/list` and `tools/call` with `get_reviews` (optional `category`),
   `get_review`, `search_reviews` and `get_categories` over the same files. It echoes the request id; unknown tools,
   slugs and methods return JSON-RPC errors. It runs on Node.js and ships `content/` with the function.
