@@ -44,3 +44,8 @@ A portfolio visitor who wants to read short personal book notes in a text-first 
 
 - Reads only its own `content/book-reviews/` directory; slugs are validated (lowercase kebab-case) before any file read.
 - No personal data is collected.
+
+## Known limits
+
+- The sitemap's `lastModified` is each review's reading date, not when the page or note was last edited, so an edited
+  review keeps its old `<lastmod>` (no reliable edit date exists in the content yet).
