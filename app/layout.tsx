@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 import { SITE } from "@/components/review-views";
+import { SOCIAL_CARD } from "@/lib/share";
 import "./globals.css";
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
@@ -15,8 +16,8 @@ export const metadata: Metadata = {
   creator: "Chaowalit Greepoke (Book)",
   metadataBase: new URL(SITE),
   alternates: { canonical: "/" },
-  openGraph: { type: "website", url: SITE, title, description, siteName: "Book Reviews" },
-  twitter: { card: "summary", title, description },
+  openGraph: { type: "website", url: SITE, title, description, siteName: "Book Reviews", ...SOCIAL_CARD.openGraph },
+  twitter: { title, description, ...SOCIAL_CARD.twitter },
   robots: { index: true, follow: true },
 };
 
